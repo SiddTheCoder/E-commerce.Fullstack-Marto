@@ -4,6 +4,8 @@ import { getCurrentUser } from "./features/user/userThunks";
 import { useDispatch, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import { setIsSideBarCollapsed } from "./features/localState/localStateSlice";
+import { useEffect } from "react";
+import { subscribeUserToPush } from "./utils/notificationPush";
 
 import LoaderModal from "./components/LoaderModal";
 import Login from "./pages/Login";
@@ -37,12 +39,18 @@ function App() {
   const dispatch = useDispatch();
   const { isUserChecked } = useSelector((state) => state.user);
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(getCurrentUser());
     dispatch(getCartProducts());
     const isCollapsed = localStorage.getItem("isSideBarCollapsed") === "true";
     dispatch(setIsSideBarCollapsed(isCollapsed));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isUserChecked) {
+      subscribeUserToPush();
+    }
+  }, []);
 
   if (!isUserChecked) return <LoaderModal />;
 
