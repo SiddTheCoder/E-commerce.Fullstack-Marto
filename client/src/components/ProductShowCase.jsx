@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProductById } from "../features/product/productThunks";
 import { useSelector, useDispatch } from "react-redux";
-import UserDetails from "./UserDetails";
+import ProductShowcaseSidebar from "./ProductShowcaseSidebar";
 import ProductReviews from "./ProductReviews";
 import { toggleProductToCart } from "../features/cart/cartThunks";
+import toast from "react-hot-toast";
+import { placeOrder } from "../features/order/orderThunks";
 
 export default function ProductShowcase({ isModal = false, product = null }) {
   const { productId } = useParams();
@@ -54,6 +56,62 @@ export default function ProductShowcase({ isModal = false, product = null }) {
   } = selectedProduct;
 
   const discountedPrice = Math.round(price - (price * discount) / 100);
+
+  console.log("cartProduct", cartProducts);
+  console.log("selectedProduct", selectedProduct);
+  const selectedProductFromCart = cartProducts.find(
+    (cartProduct) => cartProduct.product._id === selectedProduct._id
+  );
+
+  console.log("selectedProductFromCart", selectedProductFromCart);
+
+  const handleProductBuyNow = async () => {
+    // interface ProductData {
+    //   productId: string;
+    //   sellerId: string;
+    //   quantity: number;
+    // }
+    // interface BODY__FOR__PLACE__ORDER(orderData) {
+    //   productData: ProductData[];
+    //   paymentMethod: string;
+    //   totalAmount: number;
+    //   fromCart: Boolean;
+    // }
+
+    const selectedProductFromCart = cartProducts.find(
+      (cartProduct) => cartProduct.product._id === selectedProduct._id
+    );
+
+    const amount =
+      selectedProductFromCart.product.price -
+      selectedProductFromCart.product.price *
+        (selectedProductFromCart.product.discount / 100);
+
+    const orderData = {
+      productData: [
+        {
+          productId: selectedProduct._id,
+          sellerId: selectedProductFromCart.product.seller,
+          quantity: selectedProductFromCart.quantity,
+        },
+      ],
+      paymentMethod: "COD",
+      totalAmount: amount,
+      fromCart: false,
+    };
+
+    console.log("orderData", orderData);
+
+    try {
+      const id = toast.loading("Placing order...");
+      await dispatch(placeOrder(orderData)).unwrap();
+      toast.success("🎉 Order placed successfully!", { id });
+      toast.dismiss(id);
+      navigate("/products");
+    } catch (error) {
+      toast.error("Failed to place order");
+    }
+  };
 
   return (
     <div
@@ -175,8 +233,28 @@ export default function ProductShowcase({ isModal = false, product = null }) {
               {/* Actions */}
               <div className="flex gap-4 mt-4">
                 <button
+                  disabled={
+                    !(
+                      user.address ||
+                      user.phone ||
+                      user.shippingAddress ||
+                      user.city ||
+                      user.country ||
+                      user.district ||
+                      user.postalCode
+                    )
+                  }
+                  onClick={handleProductBuyNow}
                   className={`${
-                    !(user.address || user.phone || user.shippingAddress)
+                    !(
+                      user.address ||
+                      user.phone ||
+                      user.shippingAddress ||
+                      user.city ||
+                      user.country ||
+                      user.district ||
+                      user.postalCode
+                    )
                       ? "cursor-not-allowed bg-blue-600/50"
                       : "cursor-pointer bg-blue-600 hover:bg-blue-700"
                   }  text-white px-5 py-2 rounded `}
@@ -205,8 +283,8 @@ export default function ProductShowcase({ isModal = false, product = null }) {
 
           {/* Right side */}
 
-          <div className="w-full md:w-[40%] lg:w-[30%]">
-            <UserDetails product={selectedProduct} />
+          <div className="w-full md:w-[40%] lg:w-[30%] relative">
+            <ProductShowcaseSidebar product={selectedProduct} />
           </div>
         </div>
 

@@ -335,7 +335,7 @@ export const getCurrentUser = asyncHandler((req, res) => {
 });
 
 export const updateUserCredentials = asyncHandler(async (req, res) => {
-  const { phoneNumber, address, shippingAddress } = req.body;
+  const { phoneNumber, address, shippingAddress, city,country,district,postalCode } = req.body;
 
   const user = await User.findByIdAndUpdate(
     req.user?._id,
@@ -344,6 +344,10 @@ export const updateUserCredentials = asyncHandler(async (req, res) => {
         phoneNumber,
         address,
         shippingAddress: shippingAddress || req.user.email,
+        city,
+        country,
+        district,
+        postalCode,
       },
     },
     { new: true }

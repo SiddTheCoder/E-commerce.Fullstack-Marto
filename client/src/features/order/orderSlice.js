@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   orders: [],
-  currentProduct: null,
+  orderedProducts: null,
   loading: false,
   error: null,
   success: null,
@@ -16,8 +16,8 @@ const orderSlice = createSlice({
     setOrders: (state, action) => {
       state.orders = action.payload;
     },
-    setCurrentProduct: (state, action) => {
-      state.currentProduct = action.payload;
+    setOrderedProducts: (state, action) => {
+      state.orderedProducts = action.payload;
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
@@ -36,7 +36,7 @@ const orderSlice = createSlice({
 
 export const {
   setOrders,
-  setCurrentProduct,
+  setOrderedProducts,
   setLoading,
   setError,
   setSuccess,

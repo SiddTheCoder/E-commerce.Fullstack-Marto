@@ -36,10 +36,22 @@ const userSchema = new mongoose.Schema(
       type: Number,
     },
     address: {
-      type: "String",
+      type: String,
     },
     shippingAddress: {
-      type: "String",
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    postalCode: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    district: {
+      type : String,
     },
     likedStores: [
       {

@@ -5,6 +5,18 @@ export const subscribeUserToPush = async () => {
     try {
       const registration = await navigator.serviceWorker.register("/sw.js");
 
+      if (!registration) {
+        console.error("❌ Service worker registration failed");
+        return;
+      }
+
+      navigator.serviceWorker.ready.then((reg) => {
+        reg.showNotification("Test Notification", {
+          body: "This is a manual test",
+          icon: "/goggle-png copy.png",
+        });
+      });
+
       const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
       if (!vapidKey) {

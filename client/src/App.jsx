@@ -37,7 +37,7 @@ function App() {
   const backgroundLocation = state?.backgroundLocation || location;
 
   const dispatch = useDispatch();
-  const { isUserChecked } = useSelector((state) => state.user);
+  const { user, isUserChecked } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(getCurrentUser());
@@ -47,10 +47,15 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isUserChecked) {
-      subscribeUserToPush();
+    if (user && Notification.permission !== "granted") {
+      const alreadySubscribed = localStorage.getItem("pushSubscribed");
+      if (!alreadySubscribed) {
+        subscribeUserToPush().then(() => {
+          localStorage.setItem("pushSubscribed", "true");
+        });
+      }
     }
-  }, []);
+  }, [user]);
 
   if (!isUserChecked) return <LoaderModal />;
 
