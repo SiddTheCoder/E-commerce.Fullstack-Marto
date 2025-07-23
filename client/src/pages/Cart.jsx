@@ -5,14 +5,87 @@ import PageBacker from "../components/PageBacker";
 import CartItem from "../components/CartItem";
 import { AnimatePresence, motion } from "framer-motion";
 import { Omega } from "lucide-react"; // Assuming Omega is an icon you want to use
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { placeOrder } from "../features/order/orderThunks";
+
+import AddToCartAnimationImg from '../assets/Add_to-Cart.json'
+import Lottie from "lottie-react";
 
 function Cart() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading } = useSelector((state) => state.order);
   const { cartProducts } = useSelector((state) => state.cart);
 
   useEffect(() => {
     dispatch(getCartProducts());
   }, [dispatch]);
+
+  const totalAmounts = cartProducts
+    ?.map((cartProduct) => {
+      return (
+        (cartProduct.product.price -
+          cartProduct.product.price * (cartProduct.product.discount / 100)) *
+        cartProduct.quantity
+      );
+    })
+    .reduce((acc, amount) => acc + amount, 0);
+
+  const handleBuyProductFromCart = async () => {
+    if (cartProducts.length === 0) {
+      toast.error("Cart is empty 😔");
+      return;
+    }
+    // interface ProductData = [ {
+    //   productId: string;
+    //   sellerId: string;
+    //   quantity: number;
+    // } ]
+    // interface BODY__FOR__PLACE__ORDER(orderData) {
+    //   productData: ProductData[];
+    //   paymentMethod: string;
+    //   totalAmount: number;
+    //   fromCart: Boolean;
+    // }
+
+    // returns an array of product objects
+    const products = cartProducts.map((cartProduct) => {
+      return {
+        productId: cartProduct.product._id,
+        quantity: cartProduct.quantity,
+        sellerId: cartProduct.product.seller,
+      };
+    });
+
+    const amount = cartProducts
+      ?.map((cartProduct) => {
+        return (
+          (cartProduct.product.price -
+            cartProduct.product.price * (cartProduct.product.discount / 100)) *
+          cartProduct.quantity
+        );
+      })
+      .reduce((acc, amount) => acc + amount, 0);
+
+    const orderData = {
+      productData: products,
+      paymentMethod: "COD",
+      totalAmount: amount,
+      fromCart: true,
+    };
+
+    console.log("orderData", orderData);
+    if(!orderData) return
+    try {
+      await dispatch(placeOrder(orderData)).unwrap();
+      toast.success("🎉 Order placed successfully!");
+      navigate("/products");
+    } catch (error) {
+      console.log("error at placing order", error);
+      toast.error("Failed to place order");
+    }
+  };
 
   return (
     <div className="h-full w-full flex flex-col bg-slate-100/10">
@@ -23,16 +96,18 @@ function Cart() {
         <div className="flex justify-center items-center gap-4">
           <span>
             Total : Rs{" "}
-            <span className="font-bold">
-              {cartProducts?.reduce((acc, item) => acc + item.product.price, 0)}
-            </span>
+            <span className="font-bold">{totalAmounts?.toFixed(2)}</span>
           </span>
 
           {/* Divider */}
           <div className="h-5 w-0.5 bg-blue-400 rounded-full"></div>
 
-          <span className="bg-blue-400 hover:bg-blue-500 transition-all duration-150 ease-in py-2 px-4 rounded-md cursor-pointer text-sm flex items-center gap-1 hover:gap-3 text-white">
-            <Omega className="w-4 h-4" /> Buy Now
+          <span
+            onClick={handleBuyProductFromCart}
+            className="bg-blue-400 hover:bg-blue-500 transition-all duration-150 ease-in py-2 px-4 rounded-md cursor-pointer text-sm flex items-center gap-1 hover:gap-3 text-white"
+          >
+            <Omega className="w-4 h-4" />{" "}
+            {loading ? "Placing Order..." : "Buy Now"}
           </span>
         </div>
       </header>
@@ -50,20 +125,33 @@ function Cart() {
               .reverse()
               .map((item) => <CartItem key={item._id} item={item} />)
           ) : (
-            <motion.p
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center text-gray-500 mt-10"
+              className="text-center text-gray-500 mt-10 w-full h-[70vh] flex flex-col justify-start items-center gap-4"
             >
-              Your cart is empty.
-            </motion.p>
+              <div>
+                Your cart is empty.{" "}
+                <span
+                  onClick={() => navigate("/")}
+                  className="highlight-tilt text-black px-4 py-1 cursor-pointer"
+                >
+                  Shop Now !
+                </span>
+              </div>
+              <Lottie loop={true} animationData={AddToCartAnimationImg} />
+            </motion.div>
           )}
         </AnimatePresence>
-        <div className="h-14 w-full text-white flex items-center justify-end py-2 px-10">
-          <span className="bg-blue-400 hover:bg-blue-500 transition-all duration-150 ease-in py-2 px-4 rounded-md cursor-pointer text-sm flex items-center gap-1 hover:gap-3 text-white">
-            <Omega className="w-4 h-4" /> Buy Now
+        { cartProducts?.length > 0 &&<div className="h-14 w-full text-white flex items-center justify-end py-2 px-10">
+          <span
+            onClick={handleBuyProductFromCart}
+            className="bg-blue-400 hover:bg-blue-500 transition-all duration-150 ease-in py-2 px-4 rounded-md cursor-pointer text-sm flex items-center gap-1 hover:gap-3 text-white"
+          >
+            <Omega className="w-4 h-4" />{" "}
+            {loading ? "Placing Order..." : "Buy Now"}
           </span>
-        </div>
+        </div>}
       </main>
     </div>
   );

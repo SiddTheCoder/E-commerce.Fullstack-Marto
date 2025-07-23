@@ -170,7 +170,15 @@ export const placeOrder = asyncHandler(async (req, res) => {
     );
 });
 
-export const getConsumerAllOrders = asyncHandler(async (req, res) => {});
+export const getConsumerAllOrders = asyncHandler(async (req, res) => {
+  // find all orders on the basis of user
+  const orders = await Order.find({ user: req.user._id });
+  console.log("orders", orders);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Orders fetched successfully"));
+});
 
 export const getSellerAllOrders = asyncHandler(async (req, res) => {
   // find all orders on the basis of store and place them together (for dashboard,etc)

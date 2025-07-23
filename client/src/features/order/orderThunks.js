@@ -9,6 +9,8 @@ import {
   setFilteredProducts,
 } from "./orderSlice";
 
+import { setCartProducts, setCartProductsLength } from "../cart/cartSlice";
+
 // interface ProductData {
 //   productId: string;
 //   sellerId: string;
@@ -36,6 +38,32 @@ export const placeOrder = createAsyncThunk(
     } catch (error) {
       console.log(
         'Error occured while placeing order',
+        error
+      )
+      return rejectWithValue(error.response?.data || error.message)
+    } finally {
+      dispatch(setLoading(false))
+    }
+  }
+)
+
+export const getConsumerAllOrders = createAsyncThunk(
+  'order/getConsumerAllOrders',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true))
+      const response = await axiosInsance.get('/order/get-consumer-all-orders')
+      console.log(
+        'Data fetchec while getting consumer all orders',
+        response.data.data
+      )
+      dispatch(setOrders(response.data.data))
+      dispatch(setCartProducts([]))
+      dispatch(setCartProductsLength(0))
+      return response.data.data
+    } catch (error) {
+      console.log(
+        'Error occured while getting consumer all orders',
         error
       )
       return rejectWithValue(error.response?.data || error.message)

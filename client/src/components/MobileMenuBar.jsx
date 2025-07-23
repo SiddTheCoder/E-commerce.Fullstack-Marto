@@ -5,6 +5,7 @@ import {
   Heart,
   MessageCircle,
   Settings,
+  Box,
 } from "lucide-react";
 
 const MobileMenuBar = () => {
@@ -12,9 +13,10 @@ const MobileMenuBar = () => {
     { to: "/cart", icon: ShoppingBag },
     { to: "/wishlist", icon: Heart },
     { to: "/", icon: LayoutDashboard },
-    { to: "/messages", icon: MessageCircle },
+    { to: "/products", icon: Box },
     { to: "/settings", icon: Settings },
   ];
+  
 
   return (
     <div className="flex items-center justify-around p-3 bg-blue-900 shadow-md w-full h-14 fixed bottom-0 left-0 z-50 rounded-t-2xl">
