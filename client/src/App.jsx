@@ -24,7 +24,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Cart from "./pages/Cart";
 import { getCartProducts } from "./features/cart/cartThunks";
 import SearchPage from "./pages/SearchPage";
-import ProductPage from "./pages/ProductPage";
+import ProductPage from "./pages/order/ProductPage";
 import OrderPage from "./pages/OrderPage";
 import SalesReportPage from "./pages/SalesReportPage";
 import ProductShowcase from "./components/ProductShowCase";

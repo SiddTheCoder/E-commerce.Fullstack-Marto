@@ -171,13 +171,25 @@ export const placeOrder = asyncHandler(async (req, res) => {
 });
 
 export const getConsumerAllOrders = asyncHandler(async (req, res) => {
-  // find all orders on the basis of user
-  const orders = await Order.find({ user: req.user._id });
-  console.log("orders", orders);
+  const orders = await Order.find({ user: req.user._id })
+    .sort({ createdAt: -1 }) // Order-level sort
+    .populate("products.product")
+    .populate("products.seller");
+
+  // Now sort the `products` array inside each order
+  const sortedOrders = orders.map((order) => {
+    const sortedProducts = [...order.products].sort(
+      (a, b) => new Date(b.orderPlacedAt) - new Date(a.orderPlacedAt)
+    );
+    return {
+      ...order._doc, // flatten Mongoose doc
+      products: sortedProducts,
+    };
+  });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, orders, "Orders fetched successfully"));
+    .json(new ApiResponse(200, sortedOrders, "Orders fetched successfully"));
 });
 
 export const getSellerAllOrders = asyncHandler(async (req, res) => {

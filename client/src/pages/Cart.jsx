@@ -8,15 +8,31 @@ import { Omega } from "lucide-react"; // Assuming Omega is an icon you want to u
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { placeOrder } from "../features/order/orderThunks";
+import UserDetails from "../components/user/UserDetails";
 
-import AddToCartAnimationImg from '../assets/Add_to-Cart.json'
+import AddToCartAnimationImg from "../assets/Add_to-Cart.json";
 import Lottie from "lottie-react";
+
 
 function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.order);
   const { cartProducts } = useSelector((state) => state.cart);
+
+  const [isUserDetailsOpen, setIsUserDetailsOpen] = React.useState(false);
+
+  const { user } = useSelector((state) => state.user);
+
+  const missingDetails =
+    !user?.fullName ||
+    !user?.age ||
+    !user?.phoneNumber ||
+    !user?.address ||
+    !user?.country ||
+    !user?.city ||
+    !user?.district ||
+    !user?.postalCode;
 
   useEffect(() => {
     dispatch(getCartProducts());
@@ -35,6 +51,11 @@ function Cart() {
   const handleBuyProductFromCart = async () => {
     if (cartProducts.length === 0) {
       toast.error("Cart is empty 😔");
+      return;
+    }
+    if (missingDetails) {
+      toast.error("Please fill in your details");
+      setIsUserDetailsOpen(true);
       return;
     }
     // interface ProductData = [ {
@@ -76,7 +97,7 @@ function Cart() {
     };
 
     console.log("orderData", orderData);
-    if(!orderData) return
+    if (!orderData) return;
     try {
       await dispatch(placeOrder(orderData)).unwrap();
       toast.success("🎉 Order placed successfully!");
@@ -89,6 +110,13 @@ function Cart() {
 
   return (
     <div className="h-full w-full flex flex-col bg-slate-100/10">
+      {isUserDetailsOpen && (
+        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center px-4">
+          <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl overflow-y-auto max-h-[90vh] relative">
+            <UserDetails onClose={() => setIsUserDetailsOpen(false)} />
+          </div>
+        </div>
+      )}
       {/* Sticky Header */}
       <header className="bg-slate-100/10 shadow-md pl-4 flex justify-between items-center h-14 w-full pr-5 py-4 sticky top-0 z-50">
         <PageBacker />
@@ -143,15 +171,17 @@ function Cart() {
             </motion.div>
           )}
         </AnimatePresence>
-        { cartProducts?.length > 0 &&<div className="h-14 w-full text-white flex items-center justify-end py-2 px-10">
-          <span
-            onClick={handleBuyProductFromCart}
-            className="bg-blue-400 hover:bg-blue-500 transition-all duration-150 ease-in py-2 px-4 rounded-md cursor-pointer text-sm flex items-center gap-1 hover:gap-3 text-white"
-          >
-            <Omega className="w-4 h-4" />{" "}
-            {loading ? "Placing Order..." : "Buy Now"}
-          </span>
-        </div>}
+        {cartProducts?.length > 0 && (
+          <div className="h-14 w-full text-white flex items-center justify-end py-2 px-10">
+            <span
+              onClick={handleBuyProductFromCart}
+              className="bg-blue-400 hover:bg-blue-500 transition-all duration-150 ease-in py-2 px-4 rounded-md cursor-pointer text-sm flex items-center gap-1 hover:gap-3 text-white"
+            >
+              <Omega className="w-4 h-4" />{" "}
+              {loading ? "Placing Order..." : "Buy Now"}
+            </span>
+          </div>
+        )}
       </main>
     </div>
   );

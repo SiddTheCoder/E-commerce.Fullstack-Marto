@@ -11,13 +11,12 @@ import {
   Hash,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateUserCredentials } from "../../features/user/userThunks";
 
 function UserDetails({ onClose }) {
   const dispatch = useDispatch();
-  const {user} = useSelector((state) => state.user)
-
+  const { user } = useSelector((state) => state.user);
 
   const [userDetailForm, setUserDetailForm] = React.useState({
     fullName: "",

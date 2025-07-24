@@ -78,21 +78,29 @@ export default function ProductShowcase({ isModal = false, product = null }) {
     //   fromCart: Boolean;
     // }
 
+    let amount = 0;
+
     const selectedProductFromCart = cartProducts.find(
       (cartProduct) => cartProduct.product._id === selectedProduct._id
     );
 
-    const amount =
-      selectedProductFromCart.product.price -
-      selectedProductFromCart.product.price *
-        (selectedProductFromCart.product.discount / 100);
+    if (selectedProductFromCart) {
+      amount =
+        selectedProductFromCart.product.price -
+        selectedProductFromCart.product.price *
+          (selectedProductFromCart.product.discount / 100);
+    } else {
+      amount =
+        selectedProduct.price -
+        selectedProduct.price * (selectedProduct.discount / 100);
+    }
 
     const orderData = {
       productData: [
         {
           productId: selectedProduct._id,
-          sellerId: selectedProductFromCart.product.seller,
-          quantity: selectedProductFromCart.quantity,
+          sellerId: selectedProduct.seller,
+          quantity: quantity,
         },
       ],
       paymentMethod: "COD",
