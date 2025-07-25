@@ -54,6 +54,7 @@ function Home() {
                       key={product._id}
                       product={product}
                       loading={loading}
+                      viewLocation="home"
                     />
                   ))}
             </div>

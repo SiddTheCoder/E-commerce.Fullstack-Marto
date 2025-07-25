@@ -13,7 +13,6 @@ import UserDetails from "../components/user/UserDetails";
 import AddToCartAnimationImg from "../assets/Add_to-Cart.json";
 import Lottie from "lottie-react";
 
-
 function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -99,7 +98,9 @@ function Cart() {
     console.log("orderData", orderData);
     if (!orderData) return;
     try {
+      let id = toast.loading("Placing order...");
       await dispatch(placeOrder(orderData)).unwrap();
+      toast.dismiss(id);
       toast.success("🎉 Order placed successfully!");
       navigate("/products");
     } catch (error) {
