@@ -19,31 +19,28 @@ import { motion } from "framer-motion";
 // --- Mini Component: CartButton ---
 // This component renders the animated cart button.
 const CartButton = ({ isInCart, onToggle, user, product }) => {
+  const isSeller = user && user._id === product.seller;
+
   return (
     <motion.div
-      // Start hidden and animate to visible.
       initial={{ scale: 0, opacity: 0, x: 20 }}
       animate={{ scale: 1, opacity: 1, x: 0 }}
       transition={{ type: "spring", stiffness: 400, damping: 20 }}
       className="absolute bottom-2 right-2 origin-right z-10 flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full shadow-md cursor-pointer transition-all duration-0
         text-white
         bg-gradient-to-bl from-blue-400 to-blue-800 hover:from-blue-800 hover:to-blue-700"
-      onClick={(e) => {
-        e.stopPropagation(); // prevent triggering parent clicks
-        onToggle();
-      }}
     >
-      {user._id !== product.seller ? (
-        <>
+      {isSeller ? (
+        <div className="flex items-center gap-1">
+          <span>Edit</span>
+          <PencilLine size={16} />
+        </div>
+      ) : (
+        <div className="flex items-center gap-1" onClick={onToggle}>
           <span className="hidden sm:inline">
             {isInCart ? "Carted" : "Cart"}
           </span>
           {isInCart ? <CheckCircle size={18} /> : <ShoppingCart size={18} />}
-        </>
-      ) : (
-        <div className="flex items-center gap-1">
-          <span>Edit</span>
-          <PencilLine size={16} />
         </div>
       )}
     </motion.div>
@@ -84,6 +81,10 @@ const ProductCard = ({
   };
 
   const toggleCart = async (productId) => {
+    if (!user) {
+      toast.error("Please login to add to cart");
+      return;
+    }
     try {
       await dispatch(toggleProductToCart({ productId })).unwrap();
     } catch (error) {
@@ -234,7 +235,7 @@ const ProductCard = ({
           {(viewLocation !== "home" || screenView === "mobile") && (
             <div className="mt-2 flex justify-end items-center">
               <div className="flex gap-1">
-                {user?._id !== product.seller ? (
+                {!user || user?._id !== product.seller ? (
                   <button
                     type="button"
                     onClick={() => {

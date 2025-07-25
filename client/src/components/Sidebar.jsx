@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink,Link } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../features/auth/authThunks";
 import { useNavigate } from "react-router-dom";
@@ -32,10 +32,8 @@ import Confirmer from "./Confirmer";
 import { getCartProducts } from "../features/cart/cartThunks";
 
 const Sidebar = () => {
-  // for pre-fectching the data from sidebar
   const hasPrefetchedStores = useRef(false);
   const { hasFetched } = useSelector((state) => state.store);
-
   const hasPrefetchedCart = useRef(false);
   const { hasCartFetched } = useSelector((state) => state.cart);
 
@@ -46,6 +44,8 @@ const Sidebar = () => {
 
   const [isMobile, setIsMobile] = useState(false);
   const [isLogoutConfirmerOn, setIsLogoutConfirmerOn] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
   const isOpen = !isSideBarCollapsed;
 
   const toggleSidebar = () => {
@@ -85,10 +85,10 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full z-40 transition-all duration-300 bg-white shadow-md flex flex-col justify-between
-          ${isOpen ? "w-[250px]" : "w-[75px]"}`}
+        className={`fixed top-0 left-0 h-full z-40 transition-all duration-300 bg-white shadow-md flex flex-col justify-between ${
+          isOpen ? "w-[250px]" : "w-[75px]"
+        }`}
       >
         {/* Top Section */}
         <div className="p-4 relative">
@@ -107,62 +107,84 @@ const Sidebar = () => {
               )}
             </div>
 
-            {/* Toggle Button */}
             <button
               onClick={toggleSidebar}
-              className="p-1 mr-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 transition cursor-pointer"
+              className="p-1 mr-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 transition cursor-e-resize"
             >
               {isOpen ? <ChevronLeft size={23} /> : <AlignJustify size={23} />}
             </button>
           </div>
 
           {/* Nav Items */}
-          <nav className={`mt-6 flex flex-col gap-1`}>
+          <nav className="mt-6 flex flex-col gap-1">
             {navItems.map(({ to, icon: Icon, label }, index) => {
               const isStoresLink = to === "/stores";
               const isCartLink = to === "/cart";
+
               return (
-                <NavLink
-                  onMouseEnter={() => {
-                    if (
-                      isStoresLink &&
-                      (!hasPrefetchedStores.current || !hasFetched)
-                    ) {
-                      dispatch(getAllStores());
-                      console.log("Data Fetched");
-                      hasPrefetchedStores.current = true;
-                    }
-                    if (
-                      isCartLink &&
-                      (!hasPrefetchedCart.current || !hasCartFetched)
-                    ) {
-                      dispatch(getCartProducts());
-                      hasPrefetchedCart.current = true;
-                    }
-                  }}
-                  onClick={() => {
-                    localStorage.setItem("isSideBarCollapsed", true);
-                    dispatch(setIsSideBarCollapsed(true));
-                  }}
+                <div
                   key={index}
-                  to={to}
-                  className={({ isActive }) =>
-                    `group flex items-center gap-3 px-3 py-2 rounded-md text-[12px] font-medium transition-all relative ${
-                      isActive
-                        ? "bg-blue-100 text-blue-600"
-                        : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
-                    }`
-                  }
+                  className={`relative flex flex-col justify-start ${
+                    isSideBarCollapsed
+                      ? "items-center h-[50px] "
+                      : "items-start w-full"
+                  }`}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  <Icon className="w-[18px] h-[18px]" />
-                  {isOpen ? (
-                    <span>{label}</span>
-                  ) : (
-                    <span className="absolute left-full ml-2 bg-blue-950 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                  <NavLink
+                    onMouseEnter={() => {
+                      if (
+                        isStoresLink &&
+                        (!hasPrefetchedStores.current || !hasFetched)
+                      ) {
+                        dispatch(getAllStores());
+                        hasPrefetchedStores.current = true;
+                      }
+                      if (
+                        isCartLink &&
+                        (!hasPrefetchedCart.current || !hasCartFetched)
+                      ) {
+                        dispatch(getCartProducts());
+                        hasPrefetchedCart.current = true;
+                      }
+                    }}
+                    onClick={() => {
+                      localStorage.setItem("isSideBarCollapsed", true);
+                      dispatch(setIsSideBarCollapsed(true));
+                    }}
+                    to={to}
+                    className={({ isActive }) =>
+                      `group flex items-center gap-3 ${
+                        isOpen ? "w-full justify-start" : "justify-center"
+                      } px-3 py-2 rounded-md text-[12px] font-medium transition-all relative ${
+                        isActive
+                          ? "bg-blue-100 text-blue-600"
+                          : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                      }`
+                    }
+                  >
+                    <Icon className="w-[18px] h-[18px]" />
+                    {isOpen ? (
+                      <span>{label}</span>
+                    ) : (
+                      <span className="absolute left-full ml-2 bg-blue-950 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                        {label}
+                      </span>
+                    )}
+                  </NavLink>
+
+                  {/* Label BELOW the icon — FIXED and SMOOTHLY animated */}
+                  {!isOpen && (
+                    <span
+                      className={`absolute top-[30px] text-[10px] text-gray-500 transition-opacity duration-200 truncate ${
+                        hoveredIndex === index ? "opacity-0" : "opacity-100"
+                      }`}
+                    >
                       {label}
                     </span>
                   )}
-                </NavLink>
+                </div>
               );
             })}
           </nav>
@@ -175,7 +197,7 @@ const Sidebar = () => {
             {user && user.role === "consumer" && (
               <Link
                 to="/become-seller"
-                className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative"
+                className="cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative"
               >
                 <Speech className="w-[18px] h-[18px]" />
                 {isOpen ? (
@@ -196,7 +218,7 @@ const Sidebar = () => {
                   `group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors relative ${
                     isActive
                       ? "bg-blue-100 text-blue-600"
-                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-orange-200"
                   }`
                 }
               >
@@ -236,7 +258,7 @@ const Sidebar = () => {
             {user && (
               <div
                 onClick={() => setIsLogoutConfirmerOn(true)}
-                className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors relative"
+                className="cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors relative"
               >
                 <LogOut className="w-[18px] h-[18px]" />
                 {isOpen ? (
