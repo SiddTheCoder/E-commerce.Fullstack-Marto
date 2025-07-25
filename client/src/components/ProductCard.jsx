@@ -18,7 +18,7 @@ import { motion } from "framer-motion";
 
 // --- Mini Component: CartButton ---
 // This component renders the animated cart button.
-const CartButton = ({ isInCart, onToggle }) => {
+const CartButton = ({ isInCart, onToggle, user, product }) => {
   return (
     <motion.div
       // Start hidden and animate to visible.
@@ -33,10 +33,19 @@ const CartButton = ({ isInCart, onToggle }) => {
         onToggle();
       }}
     >
-      <span className="hidden sm:inline">
-        {isInCart ? "Carted" : "Cart"}
-      </span>
-      {isInCart ? <CheckCircle size={18} /> : <ShoppingCart size={18} />}
+      {user._id !== product.seller ? (
+        <>
+          <span className="hidden sm:inline">
+            {isInCart ? "Carted" : "Cart"}
+          </span>
+          {isInCart ? <CheckCircle size={18} /> : <ShoppingCart size={18} />}
+        </>
+      ) : (
+        <div className="flex items-center gap-1">
+          <span>Edit</span>
+          <PencilLine size={16} />
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -176,15 +185,15 @@ const ProductCard = ({
             )}
 
             {/* --- Animated Cart Section for Home View --- */}
-            {viewLocation === "home" &&
-              isHovered &&
-              user?._id !== product.seller && (
-                // CartButton is displayed on the image overlay; it will animate into view.
-                <CartButton
-                  isInCart={isInCart}
-                  onToggle={() => toggleCart(product._id)}
-                />
-              )}
+            {viewLocation === "home" && isHovered && (
+              // CartButton is displayed on the image overlay; it will animate into view.
+              <CartButton
+                isInCart={isInCart}
+                onToggle={() => toggleCart(product._id)}
+                user={user}
+                product={product}
+              />
+            )}
           </motion.div>
 
           {/* --- Product Info Section --- */}
@@ -222,7 +231,7 @@ const ProductCard = ({
           </div>
 
           {/* --- Bottom Cart Section for non-home view --- */}
-          {viewLocation === "null" || screenView === "mobile" && (
+          {(viewLocation !== "home" || screenView === "mobile") && (
             <div className="mt-2 flex justify-end items-center">
               <div className="flex gap-1">
                 {user?._id !== product.seller ? (
@@ -251,7 +260,8 @@ const ProductCard = ({
                     </span>
                   </button>
                 ) : (
-                  <button className="p-1 cursor-pointer rounded-full bg-blue-600 text-white hover:bg-blue-700 transition">
+                  <button className="p-1 cursor-pointer rounded-full bg-blue-600 text-white hover:bg-blue-700 transition flex gap-1 items-center">
+                    <span className="text-sm">Edit</span>{" "}
                     <PencilLine size={16} />
                   </button>
                 )}

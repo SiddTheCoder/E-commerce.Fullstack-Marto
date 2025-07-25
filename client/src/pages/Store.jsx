@@ -221,7 +221,7 @@ export default function Store() {
               <span className="p-1 text-white highlight-tilt">Products</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
               {products &&
                 products?.map((product) => (
                   <ProductCard

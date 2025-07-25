@@ -38,7 +38,9 @@ export default function ProductShowcase({ isModal = false, product = null }) {
     }
   }, [selectedProduct]);
 
-  const handleClose = () => navigate(-1);
+  const handleClose = () => {
+    navigate(-1);
+  };
 
   if (!selectedProduct) return <div>Loading...</div>;
 
@@ -213,9 +215,7 @@ export default function ProductShowcase({ isModal = false, product = null }) {
               <div className="text-sm text-gray-600">
                 In Stock:{" "}
                 {stock > 0 ? (
-                  <span className="text-green-800 font-semibold">
-                    Available
-                  </span>
+                  <span className="text-green-800 font-semibold">{stock}</span>
                 ) : (
                   <span className="text-red-600">Unavailable</span>
                 )}
@@ -239,53 +239,67 @@ export default function ProductShowcase({ isModal = false, product = null }) {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-4 mt-4">
-                <button
-                  disabled={
-                    !(
-                      user.address ||
-                      user.phone ||
-                      user.shippingAddress ||
-                      user.city ||
-                      user.country ||
-                      user.district ||
-                      user.postalCode
-                    )
-                  }
-                  onClick={handleProductBuyNow}
-                  className={`${
-                    !(
-                      user.address ||
-                      user.phone ||
-                      user.shippingAddress ||
-                      user.city ||
-                      user.country ||
-                      user.district ||
-                      user.postalCode
-                    )
-                      ? "cursor-not-allowed bg-blue-600/50"
-                      : "cursor-pointer bg-blue-600 hover:bg-blue-700"
-                  }  text-white px-5 py-2 rounded `}
-                >
-                  Buy Now
-                </button>
-                {isProductInCart ? (
+              {user._id !== selectedProduct.seller ? (
+                <div className="flex gap-4 mt-4">
                   <button
-                    onClick={() => dispatch(toggleProductToCart({ productId }))}
-                    className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer px-5 py-2 rounded"
-                    // onClick={handleRemoveFromCart}
+                    disabled={
+                      !(
+                        user.address ||
+                        user.phone ||
+                        user.shippingAddress ||
+                        user.city ||
+                        user.country ||
+                        user.district ||
+                        user.postalCode
+                      )
+                    }
+                    onClick={handleProductBuyNow}
+                    className={`${
+                      !(
+                        user.address ||
+                        user.phone ||
+                        user.shippingAddress ||
+                        user.city ||
+                        user.country ||
+                        user.district ||
+                        user.postalCode
+                      )
+                        ? "cursor-not-allowed bg-blue-600/50"
+                        : "cursor-pointer bg-blue-600 hover:bg-blue-700"
+                    }  text-white px-5 py-2 rounded `}
                   >
-                    Added to Cart
+                    Buy Now
                   </button>
-                ) : (
+                  {isProductInCart ? (
+                    <button
+                      onClick={() =>
+                        dispatch(toggleProductToCart({ productId }))
+                      }
+                      className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer px-5 py-2 rounded"
+                      // onClick={handleRemoveFromCart}
+                    >
+                      Added to Cart
+                    </button>
+                  ) : (
+                    <button
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
+                      onClick={() =>
+                        dispatch(toggleProductToCart({ productId }))
+                      }
+                    >
+                      Add to Cart
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="flex gap-4 mt-4">
                   <button
                     className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
-                    onClick={() => dispatch(toggleProductToCart({ productId }))}
                   >
-                    Add to Cart
+                    Edit Product
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 

@@ -72,3 +72,27 @@ export const getConsumerAllOrders = createAsyncThunk(
     }
   }
 )
+
+export const getSellerAllOrders = createAsyncThunk(
+  'order/getSellerAllOrders',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true))
+      const response = await axiosInsance.get('/order/get-seller-all-orders')
+      console.log(
+        'Data fetchec while getting seller all orders',
+        response.data.data
+      )
+      dispatch(setOrders(response.data.data))
+      return response.data.data
+    } catch (error) {
+      console.log(
+        'Error occured while getting seller all orders',
+        error
+      )
+      return rejectWithValue(error.response?.data || error.message)
+    } finally {
+      dispatch(setLoading(false))
+    }
+  }
+)

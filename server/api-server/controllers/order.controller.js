@@ -194,6 +194,18 @@ export const getConsumerAllOrders = asyncHandler(async (req, res) => {
 
 export const getSellerAllOrders = asyncHandler(async (req, res) => {
   // find all orders on the basis of store and place them together (for dashboard,etc)
+  const orders = await Order.find({ "products.seller": req.user._id })
+    .sort({ createdAt: -1 }) // Order-level sort
+    .populate("products.product")
+    .populate({
+      path: "user",
+      select: "fullName",
+    });
+
+  console.log("orders", orders);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Orders fetched successfully"));
 });
 
 export const getOrderById = asyncHandler(async (req, res) => {});
