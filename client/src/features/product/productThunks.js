@@ -7,6 +7,7 @@ import {
   setSuccess,
   setFilteredProducts,
 } from "./productSlice";
+import { setCurrentStoreProducts } from "../store/storeSlice";
 import axiosInstance from "../../utils/axiosInstance";
 
 export const createProduct = createAsyncThunk(
@@ -29,11 +30,14 @@ export const createProduct = createAsyncThunk(
 
       const createdProduct = response.data.data;
       const { products } = getState().product;
+      const { currentStore } = getState().store;
 
       // 🔧 Create a new array instead of mutating state
       const updatedProducts = [createdProduct, ...products];
       dispatch(setProducts(updatedProducts));
-
+      dispatch(
+        setCurrentStoreProducts([createdProduct, ...currentStore.products])
+      );
       return createdProduct;
     } catch (error) {
       console.log("err at geting store", error);

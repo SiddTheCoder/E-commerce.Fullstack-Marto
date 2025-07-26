@@ -26,8 +26,8 @@ import { getCartProducts } from "./features/cart/cartThunks";
 import SearchPage from "./pages/SearchPage";
 import ProductPage from "./pages/consumer-order-pages/ProductPage";
 import OrderPage from "./pages/seller-order-pages/OrderPage";
-import SalesReportPage from "./pages/SalesReportPage";
-import ProductShowcase from "./components/ProductShowCase";
+import SalesReportPage from "./pages/sales/SalesReportPage";
+import ProductShowcase from "./pages/ProductShowcase/ProductShowCase";
 import PublicStore from "./pages/PublicStore";
 import BecomeSeller from "./pages/BecomeSeller/BecomeSellerLanderPage";
 

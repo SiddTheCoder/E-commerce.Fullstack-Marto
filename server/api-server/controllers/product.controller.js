@@ -17,6 +17,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     features,
     isFeatured,
     storeId,
+    subCategory,
   } = req.body;
 
   if (
@@ -29,6 +30,7 @@ export const createProduct = asyncHandler(async (req, res) => {
       stock,
       features,
       isFeatured,
+      subCategory
     ].some((field) => field === "")
   ) {
     throw new ApiError(400, "Basic Fields are required");
@@ -67,6 +69,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     price,
     discount,
     category,
+    subCategory,
     stock,
     isFeatured,
     features: Array.isArray(features) ? features : features.split(","),

@@ -7,6 +7,7 @@ import {
   setLoading,
   setError,
   setHasFetched,
+  setCurrentStoreProducts
 } from "./storeSlice";
 import { useSelector } from "react-redux";
 import { setProducts } from "../product/productSlice";
@@ -50,6 +51,34 @@ export const getAllStores = createAsyncThunk(
     }
   }
 );
+
+export const getCurrentStoreProducts = createAsyncThunk(
+  "store/getCurrentStoreProducts",
+  async (_, { dispatch, rejectWithValue, getState }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const { currentStore } = getState().store
+      
+      const products = currentStore?.products || [];
+      console.log("Current Store Products", products);
+      dispatch(setCurrentStoreProducts(products));
+
+      return products;
+    } catch (error) {
+      console.log("err at getting current store products", error);
+      dispatch(
+        setError(
+          error.response?.data?.message ||
+            "Error occurred while fetching the current store products"
+        )
+      );
+      return rejectWithValue(error.response?.data || error.message);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+)
 
 export const createStore = createAsyncThunk(
   "store/createStore",

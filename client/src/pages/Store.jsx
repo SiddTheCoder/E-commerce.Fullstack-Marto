@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PageBacker from "../components/PageBacker";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllStores } from "../features/store/storeThunks";
+import { getAllStores, getCurrentStoreProducts } from "../features/store/storeThunks";
 import { setCurrentStore } from "../features/store/storeSlice";
 import { Listbox } from "@headlessui/react";
 import {
@@ -29,9 +29,11 @@ export default function Store() {
   const dispatch = useDispatch();
   const [storeCreatemodalOpen, setStoreCreateModalOpen] = useState(false);
   const [productCreatemodalOpen, setProductCreateModalOpen] = useState(false);
-  const { stores, currentStore } = useSelector((state) => state.store);
+  const { stores, currentStore, currentStoreProducts } = useSelector(
+    (state) => state.store
+  );
   const { loading } = useSelector((state) => state.product);
-  const products = currentStore?.products || [];
+  const products = currentStoreProducts || [];
   const { user } = useSelector((state) => state.user);
 
   console.log("Products at Store", products);
@@ -43,6 +45,10 @@ export default function Store() {
       toast.error("Become Seller First");
     }
   }, []);
+
+  useEffect(() => {
+    dispatch(getCurrentStoreProducts());
+  }, [dispatch, currentStore]);
 
   useEffect(() => {
     dispatch(getAllStores());

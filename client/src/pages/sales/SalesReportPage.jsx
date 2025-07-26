@@ -1,6 +1,6 @@
 import React from "react";
-import SalesReportGraph from "../components/SalesReportGraph";
-import PageBacker from "../components/PageBacker";
+import SalesReportGraph from "../../components/SalesReportGraph";
+import PageBacker from "../../components/PageBacker";
 
 function SalesReportPage() {
   const [loading, setLoading] = React.useState(true);

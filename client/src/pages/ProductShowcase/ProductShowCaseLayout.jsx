@@ -293,9 +293,7 @@ export default function ProductShowcase({ isModal = false, product = null }) {
                 </div>
               ) : (
                 <div className="flex gap-4 mt-4">
-                  <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
-                  >
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
                     Edit Product
                   </button>
                 </div>
