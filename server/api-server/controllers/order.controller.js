@@ -76,7 +76,16 @@ export const placeOrder = asyncHandler(async (req, res) => {
     transactionId: uuidv4(),
   });
 
-  // After creating the Order
+  // After creating order, update product stock
+  for (const item of formattedProducts) {
+    const product = await Product.findById(item.product);
+    if (product) {
+      product.stock -= item.quantity;
+      await product.save();
+    }
+  }
+
+  // After creating the Order Processing Transaction
   const newTransaction = await Transaction.create({
     transactionId: newOrder.transactionId,
     order: newOrder._id,
