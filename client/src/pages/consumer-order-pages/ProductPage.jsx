@@ -24,8 +24,6 @@ function ProductPage() {
     dispatch(getConsumerAllOrders());
   }, [dispatch]);
 
-  console.log("Orders", orders);
-  console.log("Ordered Products", orderedProductsArray);
 
   return (
     <div className="h-full w-full flex flex-col bg-slate-100/10">

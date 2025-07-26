@@ -11,6 +11,11 @@ import {
   XCircle,
 } from "lucide-react";
 
+import { useSelector, useDispatch } from "react-redux";
+
+import { toast } from "react-hot-toast";
+import { cancelOrderViaConsumer } from "../../features/order/orderThunks";
+
 const statusSteps = [
   { label: "Pending", icon: Package },
   { label: "Processing", icon: Loader },
@@ -22,6 +27,7 @@ const getStatusIndex = (status) =>
   statusSteps.findIndex((s) => s.label === status);
 
 export default function ShowOrderedProducts({ orders }) {
+  const dispatch = useDispatch();
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
 
   const handleImageIndexChange = () => {
@@ -32,6 +38,17 @@ export default function ShowOrderedProducts({ orders }) {
     const interval = setInterval(handleImageIndexChange, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleProductOrderCancel = async (orderId, productId) => {
+    try {
+      console.log("orderId", orderId, "productId", productId);
+      await dispatch(cancelOrderViaConsumer({ orderId, productId })).unwrap();
+      toast.success("Order cancelled successfully");
+    } catch (error) {
+      console.log("Error occured while canceling order via consumer", error);
+      toast.error(error.message);
+    }
+  };
 
   if (!orders?.length)
     return <p className="text-center text-gray-500">No orders found.</p>;
@@ -62,7 +79,7 @@ export default function ShowOrderedProducts({ orders }) {
             <div className="flex items-center gap-2">
               <IndianRupee size={16} className="text-blue-500" />
               <span className="font-medium">Total:</span>
-              <span>Rs. {order.totalAmount}</span>
+              <span className="font-semibold">Rs. {order.totalAmount?.toFixed(2)}</span>
             </div>
           </div>
 
@@ -100,7 +117,7 @@ export default function ShowOrderedProducts({ orders }) {
                   {prod.status === "Pending" && (
                     <button
                       onClick={() =>
-                        alert("Trigger cancel logic for product: " + prod._id)
+                        handleProductOrderCancel(order._id, prod.product._id)
                       }
                       className="absolute top-2 right-2 hidden group-hover:inline-flex items-center gap-1 text-red-600 hover:text-red-700 text-xs px-2 py-1 rounded-md bg-red-50 hover:bg-red-100 transition shadow"
                     >

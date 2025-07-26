@@ -179,6 +179,64 @@ export const placeOrder = asyncHandler(async (req, res) => {
     );
 });
 
+export const cancelOrderViaConsumer = asyncHandler(async (req, res) => {
+  const { orderId, productId } = req.body;
+
+  if (!orderId) {
+    throw new ApiError(400, "Order ID is required");
+  }
+
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
+  console.log("order", order);
+
+  if (order.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to cancel this order");
+  }
+
+  order.products.forEach((item, i) => {
+    console.log(`Comparing: ${item.product.toString()} vs ${productId}`);
+  });
+
+  const updatedProducts = order.products.filter(
+    (item) => item.product.toString() !== productId
+  );
+
+  console.log("updatedProducts", updatedProducts);
+
+  if (updatedProducts.length <= 0) {
+    await Order.findByIdAndDelete(orderId);
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          cancelledProductId: productId,
+          cancelledOrderId: orderId,
+        },
+        "Order cancelled successfully"
+      )
+    );
+  }
+
+  order.products = updatedProducts;
+  await order.save();
+
+  console.log("order", order);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        cancelledProductId: productId,
+        cancelledOrderId: orderId,
+      },
+      "Order cancelled successfully"
+    )
+  );
+});
+
 export const getConsumerAllOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id })
     .sort({ createdAt: -1 }) // Order-level sort

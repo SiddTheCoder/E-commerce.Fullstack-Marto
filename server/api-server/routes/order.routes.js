@@ -12,6 +12,7 @@ import {
   cancelOrder,
   returnOrder,
   refundOrder,
+  cancelOrderViaConsumer,
 } from "../controllers/order.controller.js";
 
 const router = Router();
@@ -37,5 +38,9 @@ router
 router
   .route("/refund-order")
   .post(verifyJWT, authorizeRoles("consumer"), refundOrder);
+
+router
+  .route("/cancel-order-via-consumer")
+  .post(verifyJWT, authorizeRoles("consumer", "seller"), cancelOrderViaConsumer);  
 
 export default router;
