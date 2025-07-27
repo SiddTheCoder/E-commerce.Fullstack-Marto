@@ -19,7 +19,7 @@ const MobileMenuBar = () => {
   
 
   return (
-    <div className="flex items-center justify-around p-3 bg-blue-900 shadow-md w-full h-14 fixed bottom-0 left-0 z-50 rounded-t-2xl">
+    <div className="flex items-center justify-around p-3 bg-blue-900 shadow-md w-full h-14 fixed bottom-0 left-0 mt-14 z-50 rounded-t-2xl">
       {menuItems.map(({ to, icon: Icon }, index) => (
         <NavLink
           key={index}

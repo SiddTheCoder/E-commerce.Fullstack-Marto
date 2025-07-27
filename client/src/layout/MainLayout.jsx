@@ -47,13 +47,15 @@ const MainLayout = () => {
   } else {
     return (
       <div className="w-screen h-screen overflow-hidden flex">
-        {/* Main content shifted to the right of sidebar */}
+        {/* Main content shifted to the center top */}
         <div className="h-full overflow-y-auto bg-gray-50 flex-1">
           <Outlet />
         </div>
 
         {/* Sidebar fixed on the left */}
-        <MobileMenuBar />
+        <div className="mt-14">
+          <MobileMenuBar />
+        </div>
       </div>
     );
   }

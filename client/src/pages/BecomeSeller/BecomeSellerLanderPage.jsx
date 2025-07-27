@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import PageBacker from "../../components/PageBacker";
 import BecomeSellerModal from "./BecomeSellerModal";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 import DashboardPreviewImage from "../../assets/dashboard-preview.png";
 import HomePagePreviewImg from "../../assets/more-access-to-sidebar.png";
@@ -29,6 +32,9 @@ function scrambleWord(targetWord, delay = 1) {
 }
 
 export default function BecomeSeller() {
+  const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [displayedWord, setDisplayedWord] = useState(WORD);
 
@@ -70,6 +76,8 @@ export default function BecomeSeller() {
 
     return () => clearInterval(interval);
   }, []);
+
+  
 
   return (
     <div className="relative w-full h-screen bg-white flex flex-col items-center px-4">
@@ -135,7 +143,13 @@ export default function BecomeSeller() {
       }
 
       <motion.button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          if (!user) {
+            toast.error("Please login to become a seller");
+            navigate("/login");
+          }
+          setIsModalOpen(true)
+        }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}

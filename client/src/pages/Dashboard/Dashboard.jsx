@@ -1,5 +1,17 @@
 import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { Search, Sun } from "lucide-react";
+import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
+import { setUser } from "../../features/user/userSlice";
+
+import StatsGrid from "./StatsGrid";
+import SummaryChart from "./SummaryChart";
+import MostSellingProducts from "./MostSellingProducts";
+import RecentOrders from "./RecentOrders";
+import TopCustomers from "./TopCustomers";
+
 import {
   Chart as ChartJS,
   LineElement,
@@ -7,9 +19,6 @@ import {
   LinearScale,
   CategoryScale,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
-import { Search, Sun, MoreVertical } from "lucide-react";
-import CountUp from "react-countup";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale);
 
@@ -143,16 +152,10 @@ const topCustomers = [
   { name: "Jhony Peters", orders: 23 },
 ];
 
-import { useSelector } from "react-redux";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../../features/user/userSlice";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -162,27 +165,23 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  const verifyDashvoardVisit = async () => {
-    try {
-      const response = await axiosInstance.post(
-        "/user/verify-visit-to-seller-dashboard"
-      );
-      console.log(response);
-      dispatch(setUser(response.data.user));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    console.log("Dashboard");
+    const verifyDashvoardVisit = async () => {
+      try {
+        const response = await axiosInstance.post(
+          "/user/verify-visit-to-seller-dashboard"
+        );
+        dispatch(setUser(response.data.user));
+      } catch (error) {
+        console.log(error);
+      }
+    };
     verifyDashvoardVisit();
-    console.log("Dashboard visited");
   }, []);
 
   return (
     <div className="flex-1 bg-[#e4e7eb] p-6 min-h-screen">
-      {/* Top Header */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="relative w-full sm:w-64">
           <input
@@ -198,7 +197,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Greeting and Filters */}
+      {/* Greeting */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-xl font-semibold text-gray-800">
@@ -223,161 +222,27 @@ export default function Dashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        {statsData.map((item, index) => {
-          // calculate start number for countup (30 less but not below 0)
-          const startVal =
-            typeof item.value === "number" ? Math.max(item.value - 30, 0) : 0;
+      <StatsGrid stats={statsData} />
 
-          return (
-            <div
-              key={index}
-              className={`rounded-xl p-4 shadow-sm bg-white/90 backdrop-blur-[3px] ${item.bg}`}
-              style={{
-                animation: `fadeInUp 0.5s ease forwards`,
-                animationDelay: `${index * 150}ms`,
-                opacity: 0,
-              }}
-            >
-              <h3 className="text-xs text-gray-500">{item.title}</h3>
-              <p className="text-lg font-semibold text-gray-800">
-                <CountUp
-                  start={Math.max(item.value - 30, 0)}
-                  end={item.value}
-                  duration={1.5}
-                  separator=","
-                  decimals={2}
-                  decimal="."
-                  prefix={item.title === "Average Order Value" ? "$" : ""}
-                  suffix={item.displayValue.includes("%") ? " %" : ""}
-                />
-              </p>
-              <span className={`text-xs font-medium ${item.color}`}>
-                {item.change} {item.sub}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Summary and Products */}
+      {/* Charts and Products */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <div className="lg:col-span-2 bg-white/90 backdrop-blur-[3px] p-5 rounded-xl shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">Summary</h3>
-            <span className="text-sm text-gray-500">Last 7 days</span>
-          </div>
-          <Line data={chartData} options={chartOptions} height={130} />
-        </div>
-
-        <div className="bg-white/60 backdrop-blur-[3px] p-5 rounded-xl shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">
-              Most Selling Products
-            </h3>
-            <MoreVertical className="h-4 w-4 text-gray-500" />
-          </div>
-          <ul className="space-y-4">
-            {products.map((p, i) => (
-              <li key={i} className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{p.image}</span>
-                  <div>
-                    <div className="text-sm font-semibold">{p.name}</div>
-                    <div className="text-xs text-gray-400">ID: {p.id}</div>
-                  </div>
-                </div>
-                <span className="text-sm font-medium text-gray-700">
-                  {p.sales}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <SummaryChart chartData={chartData} chartOptions={chartOptions} />
+        <MostSellingProducts products={products} />
       </div>
 
-      {/* Orders and Top Customers */}
+      {/* Orders and Customers */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-white/90 backdrop-blur-[3px] p-5 rounded-xl shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">Recent Orders</h3>
-            <button className="text-sm text-blue-600">View All</button>
-          </div>
-          <table className="w-full text-sm">
-            <thead className="text-gray-500 text-left border-b">
-              <tr>
-                <th className="py-2">Product</th>
-                <th>Customer</th>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order, i) => (
-                <tr key={i} className="border-b last:border-0">
-                  <td className="py-3">{order.product}</td>
-                  <td>{order.customer}</td>
-                  <td>{order.orderId}</td>
-                  <td>{order.date}</td>
-                  <td>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${order.statusColor}`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="bg-white/60 backdrop-blur-[3px] p-5 rounded-xl shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">
-              Weekly Top Customers
-            </h3>
-            <MoreVertical className="h-4 w-4 text-gray-500" />
-          </div>
-          <ul className="space-y-4">
-            {topCustomers.map((c, i) => (
-              <li key={i} className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={`https://i.pravatar.cc/40?img=${i + 5}`}
-                    className="w-8 h-8 rounded-full"
-                    alt={c.name}
-                  />
-                  <div>
-                    <div className="text-sm font-medium">{c.name}</div>
-                    <div className="text-xs text-gray-400">
-                      {c.orders} Orders
-                    </div>
-                  </div>
-                </div>
-                <button className="text-xs text-blue-600 font-medium">
-                  View
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <RecentOrders orders={orders} />
+        <TopCustomers topCustomers={topCustomers} />
       </div>
 
       <style>
         {`
-        @keyframes fadeInUp {
-          0% {
-            opacity: 0;
-            transform: translateY(10px);
+          @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
           }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}
+        `}
       </style>
     </div>
   );

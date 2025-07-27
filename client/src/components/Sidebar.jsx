@@ -194,7 +194,7 @@ const Sidebar = () => {
         <div className="px-4 py-2 border-t border-gray-200 mb-3">
           <div className="flex flex-col gap-2">
             {/* Become Seller */}
-            {user && user.role === "consumer" && (
+            {(!user || (user?.role === "consumer")) && (
               <Link
                 to="/become-seller"
                 className="cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative"
