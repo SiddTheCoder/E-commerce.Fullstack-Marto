@@ -31,7 +31,7 @@ import dropshippingRoutes from "./routes/dropshipping.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 // import webPush from "web-push";
 import notificationRoutes from "./routes/notification.routes.js";
-
+import dashboardRoutes from "./routes/dashboard.route.js";
 
 // use routes
 app.use("/api/v1/user", userRoutes);
@@ -42,6 +42,7 @@ app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/dropshipping", dropshippingRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/notification", notificationRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 
 // check the server - runtime
 app.get("/ping", (req, res) => {

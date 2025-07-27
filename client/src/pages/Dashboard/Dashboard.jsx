@@ -119,32 +119,6 @@ const products = [
   { name: "Water Bottle", id: "8441573", sales: "1K+ Sales", image: "🚰" },
 ];
 
-const orders = [
-  {
-    product: "Water Bottle",
-    customer: "Peterson Jack",
-    orderId: "#8441573",
-    date: "27 Jun 2025",
-    status: "Pending",
-    statusColor: "text-yellow-600 bg-yellow-100",
-  },
-  {
-    product: "iPhone 15 Pro",
-    customer: "Michel Datta",
-    orderId: "#2457841",
-    date: "26 Jun 2025",
-    status: "Canceled",
-    statusColor: "text-red-600 bg-red-100",
-  },
-  {
-    product: "Headphone",
-    customer: "Jeslya Rose",
-    orderId: "#1024784",
-    date: "20 Jun 2025",
-    status: "Shipped",
-    statusColor: "text-green-600 bg-green-100",
-  },
-];
 
 const topCustomers = [
   { name: "Marks Hoverson", orders: 25 },
@@ -157,6 +131,8 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
+  const { orders } = useSelector((state) => state.order);
+
 
   useEffect(() => {
     if (!user || user.role !== "seller") {
@@ -166,6 +142,9 @@ export default function Dashboard() {
   }, [user]);
 
   useEffect(() => {
+    if (orders?.lenght <= 0) {
+      toast.success("We use dummy data until you get your first order");
+    }
     const verifyDashvoardVisit = async () => {
       try {
         const response = await axiosInstance.post(
@@ -232,7 +211,7 @@ export default function Dashboard() {
 
       {/* Orders and Customers */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <RecentOrders orders={orders} />
+        <RecentOrders />
         <TopCustomers topCustomers={topCustomers} />
       </div>
 
