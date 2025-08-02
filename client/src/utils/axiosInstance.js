@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+const PRODUCTION_SERVER_URI =
+  "https://e-commerce-fullstack-kinnam-rest.onrender.com/api/v1";
+
+const DEVELOPMENT_SERVER_URI = "http://localhost:5000/api/v1";  
+
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:7000/api/v1',
-  withCredentials: true, // because you're using cookies for JWT
+  baseURL: PRODUCTION_SERVER_URI,
+  withCredentials: true,  // for cookies
 });
 
 export default axiosInstance;
