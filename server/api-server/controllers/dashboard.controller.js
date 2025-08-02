@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Store } from "../../shared/models/store.model.js";
 import { Order } from "../../shared/models/order.model.js";
 import { v4 as uuidv4 } from "uuid";
-import { uploadOnCloudinary } from "../utils/Cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../../shared/models/user.model.js";
 import dayjs from "dayjs";
 import sendMail from "../utils/sendMail.js";

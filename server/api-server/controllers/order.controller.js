@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Store } from "../../shared/models/store.model.js";
-import { uploadOnCloudinary } from "../utils/Cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../../shared/models/user.model.js";
 import { Order } from "../../shared/models/order.model.js";
 import { Cart } from "../../shared/models/cart.model.js";
