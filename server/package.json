@@ -4,6 +4,8 @@
   "description": "Backend for E-commerce Platform",
   "type": "module",
   "scripts": {
+    "start": "node api-server/index.js",
+    "start:socket": "node socket-server/index.js",
     "dev:api": "nodemon api-server/index.js",
     "dev:socket": "nodemon socket-server/index.js",
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:socket\""

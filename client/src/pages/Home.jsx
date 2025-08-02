@@ -5,6 +5,7 @@ import LoaderModal from "../components/LoaderModal";
 import ProductCard from "../components/ProductCard";
 import BannerSection from "../components/BannerSection";
 import GreetSellerModel from "./BecomeSeller/GreetSellerModel";
+import AdvertiseApp from "../components/Ads/AdvertiseApp";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../features/product/productThunks";
@@ -16,6 +17,8 @@ function Home() {
   const { products } = useSelector((state) => state.product);
   const [isSellerGreetModelOpen, setIsSellerGreetModelOpen] =
     React.useState(false);
+  const [isAdvertiseAppOpen, setIsAdvertiseAppOpen] =
+    React.useState(false);
 
   useEffect(() => {
     dispatch(getAllProducts());
@@ -24,6 +27,9 @@ function Home() {
   useEffect(() => {
     if (user?.role === "seller" && user?.isDashboardVisited === false) {
       setIsSellerGreetModelOpen(true);
+    }
+    if (!user) {
+      setIsAdvertiseAppOpen(true);
     }
   }, [user]);
 
@@ -63,6 +69,9 @@ function Home() {
 
         {isSellerGreetModelOpen && (
           <GreetSellerModel onClose={() => setIsSellerGreetModelOpen(false)} />
+        )}
+        {isAdvertiseAppOpen && (
+          <AdvertiseApp onClose={() => setIsAdvertiseAppOpen(false)} />
         )}
       </div>
     </>
