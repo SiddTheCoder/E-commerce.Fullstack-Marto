@@ -6,7 +6,7 @@ const PRODUCTION_SERVER_URI =
 const DEVELOPMENT_SERVER_URI = "http://localhost:7000/api/v1";
 
 const axiosInstance = axios.create({
-  baseURL: DEVELOPMENT_SERVER_URI,
+  baseURL: PRODUCTION_SERVER_URI,
   withCredentials: true, // Include credentials for CORS requests
 });
 
