@@ -296,7 +296,7 @@ export const promoteUserToSeller = asyncHandler(async (req, res) => {
           <p style="margin: 20px 0; font-size:16px; color:#10B981;"><strong>Your Seller ID:</strong> ${
             user.sellerId
           }</p>
-          <a href="https://anbari.com/seller/dashboard" style="display:inline-block;margin-top:20px;background:#3B82F6;color:white;padding:12px 25px;text-decoration:none;border-radius:6px;font-weight:bold;">Go to Seller Dashboard</a>
+          <a href="https://anbari.com/dashboard" style="display:inline-block;margin-top:20px;background:#3B82F6;color:white;padding:12px 25px;text-decoration:none;border-radius:6px;font-weight:bold;">Go to Seller Dashboard</a>
           <p style="font-size:13px;color:#9CA3AF;margin-top:30px;">Need help getting started? Our seller support team is just one message away.</p>
         </div>
     

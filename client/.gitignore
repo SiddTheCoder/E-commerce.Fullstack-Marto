@@ -1,4 +1,7 @@
 # Logs
+
+src/utils/axiosInstance.js
+
 logs
 *.log
 npm-debug.log*
